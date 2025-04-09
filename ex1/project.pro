@@ -2,4 +2,4 @@ library ex_lib
 
 analyze ex1.vhd
 
-simulate ex1
+simulate ex1 -frelaxed

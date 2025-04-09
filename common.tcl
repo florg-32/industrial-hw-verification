@@ -1,8 +1,8 @@
-vmap -c
+# vmap -c
 source ../osvvm/Scripts/StartUp.tcl
 
 set osvvm_libs $::osvvm::ToolNameVersion
-if {[file exist "VHDL_LIBS/$osvvm_libs/osvvm.lib"] && [file exist "VHDL_LIBS/$osvvm_libs/OSVVM_Common.lib"]} {
+if {[file exist "VHDL_LIBS/$osvvm_libs"]} {
   puts "OSVVM exists. Skipping."
 } else {
   puts "Building OSVVM"
