@@ -34,7 +34,19 @@ begin
     end if;
   end process;
 
-  -- Enter your code here
+  event_count_p: process (all) is
+  begin
+    if output'event then
+      eventCounter <= eventCounter + 1;
+    end if;
+  end process;
+
+  trans_count_p: process (all) is
+  begin
+    if output'transaction'event then
+      transCounter <= transCounter + 1;
+    end if;
+  end process;
 
   stimuli_p: process is
   begin
@@ -42,20 +54,26 @@ begin
     wait for 0 ns;
     state <= Idle;
     WaitForClock(clock_n, 20);
-    -- Enter your code here
+    AffirmIfEqual(eventCounter, 0);
+    AffirmIfEqual(transCounter, 20);
 
     state <= Invert;
     WaitForClock(clock_n, 20);
-    -- Enter your code here
-
+    AffirmIfEqual(eventCounter, 20);
+    AffirmIfEqual(transCounter, 40);
+    
     state <= NotAffected;
     WaitForClock(clock_n, 20);
-    -- Enter your code here
+    AffirmIfEqual(eventCounter, 20);
+    AffirmIfEqual(transCounter, 40);
 
     state <= Keep;
     WaitForClock(clock_n, 20);
-    -- Enter your code here
+    AffirmIfEqual(eventCounter, 20);
+    AffirmIfEqual(transCounter, 60);
 
+    Log("Events: " & to_string(eventCounter) & " Transactions: " & to_string(transCounter));
+    -- While events happen on every actual change of a value, transaction events occur on every assignment
     Log("**********************************");
     ReportAlerts;
     std.env.stop;
