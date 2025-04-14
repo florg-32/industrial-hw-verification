@@ -9,14 +9,15 @@ architecture behav of ex2 is
   type StateT is (Idle, Invert, NotAffected, Keep);
   signal state: StateT := Idle;
   signal clock, clock_n, output: std_logic := '0';
-  signal eventCounter: integer := -1;
-  signal transCounter: integer := -1;
-  -- Enter your code here
-  
+  signal eventCounter: integer := 0;
+  signal transCounter: integer := 0;
+  signal output_transactions: bit;
+
 begin
 
   CreateClock(clock, 10 ns);
   clock_n <= not clock;
+  output_transactions <= output'transaction;
 
   state_p: process (clock) is
   begin
@@ -73,7 +74,16 @@ begin
     AffirmIfEqual(transCounter, 60);
 
     Log("Events: " & to_string(eventCounter) & " Transactions: " & to_string(transCounter));
+    Log(to_string(output_transactions));
     -- While events happen on every actual change of a value, transaction events occur on every assignment
+    --
+    -- Idle -> drive with '0', NotAffected -> drive with previously assigned statement(!), Keep -> drive with
+    -- previously assigned value
+    --
+    -- As signal'transaction is a signal of type bit itself, we can add a binding for it (and reference it
+    -- here once, so that it isn't optimized away by vsim)
+    --
+    -- stimuli_p waits on the inverted clock, so the changes to happen on the clock_n's rising edges 
     Log("**********************************");
     ReportAlerts;
     std.env.stop;

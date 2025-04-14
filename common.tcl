@@ -1,4 +1,4 @@
-# vmap -c
+vmap -c
 source ../osvvm/Scripts/StartUp.tcl
 
 set osvvm_libs $::osvvm::ToolNameVersion
