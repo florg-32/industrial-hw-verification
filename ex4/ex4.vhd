@@ -8,11 +8,11 @@ package linked_list is
   );
 
   type LList is protected 
-    function Count return integer;
+    impure function Count return integer;
     procedure AddFirst(item: ElementT);
-    function GetAt(index: integer) return ElementT;
+    impure function GetAt(index: integer) return ElementT;
     procedure RemoveAt(index: integer);
-    function Dump return string;
+    impure function Dump return string;
   end protected LList;
 end package;
 
@@ -27,7 +27,7 @@ package body linked_list is
   type LList is protected body
     variable head: Link;
 
-    function Count return integer is
+    impure function Count return integer is
       variable element: Link := head;
       variable count: integer := 0;
     begin
@@ -46,18 +46,36 @@ package body linked_list is
       head := e;
     end procedure;
 
-    function GetAt(index: integer) return ElementT is
+    impure function GetAt(index: integer) return ElementT is
       variable count: integer := 0;
       variable el: Link := head;
+      variable default_ret: ElementT;
     begin
       while count < index and el.link /= null loop
         count := count + 1;
         el := el.link;
       end loop;
-
+      if count = index then
+        return el.element;
+      else
+        return default_ret;
+      end if;
     end function;
+
+    procedure RemoveAt(index: integer) is
+    begin
+    end procedure;
+
+    impure function Dump return string is
+    begin
+      return "";
+    end function;
+
   end protected body;
 end package body;
+
+library common_lib;
+context common_lib.common_context;
 
 entity ex4 is
 end entity;
@@ -69,22 +87,36 @@ architecture behav of ex4 is
     IsPrime: boolean;
   end record;
 
-  -- implement the ToString function here
   function ToString(item: PrimeRecT) return string is
   begin
-  -- Enter your code here
+    return "Prime { number: " & to_string(item.Number) & ", is_prime: " & to_string(item.IsPrime) & " }";
   end function;
 
-  -- Instantiate the linked_list package here, use PrimeRecT as generic type
-  -- Enter your code here
+  function prime(n: integer; p: boolean) return PrimeRecT is
+    variable ret: PrimeRecT;
+  begin
+    ret.Number := n;
+    ret.IsPrime := p;
+    return ret;
+  end function;
+  
+  package PrimeLL is new work.linked_list generic map(PrimeRecT, ToString);
   
 begin
 
   stimuli_p: process is
+    variable list: PrimeLL.LList;
   begin
-    -- Implement your main testbench code here
-    -- Enter your code here
+    wait for 0 ns;
+    AffirmIfEqual(list.Count, 0);
+
+    list.AddFirst(prime(1, true));
+    list.AddFirst(prime(5, true));
+    list.AddFirst(prime(8, false));
+    AffirmIfEqual(list.Count, 3);
+
     Log("**********************************");
+    ReportAlerts;
     std.env.stop;
     wait ; 
   end process;
