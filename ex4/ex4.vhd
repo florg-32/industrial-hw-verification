@@ -1,18 +1,63 @@
 library common_lib;
 context common_lib.common_context;
 
--- Implement the generic package head here. 
 package linked_list is
-  -- Enter your code here
+  generic (
+    type ElementT;
+    function ToStringF(item: ElementT) return string
+  );
+
+  type LList is protected 
+    function Count return integer;
+    procedure AddFirst(item: ElementT);
+    function GetAt(index: integer) return ElementT;
+    procedure RemoveAt(index: integer);
+    function Dump return string;
+  end protected LList;
 end package;
 
--- Implement the package body here
 package body linked_list is
-  -- Enter your code here
-end package body;
+  type Entry;
+  type Link is access Entry;
+  type Entry is record
+    element: ElementT;
+    link: Link;
+  end record;
 
-library common_lib;
-context common_lib.common_context;
+  type LList is protected body
+    variable head: Link;
+
+    function Count return integer is
+      variable element: Link := head;
+      variable count: integer := 0;
+    begin
+      while element.link /= null loop
+        count := count + 1;
+        element := element.link;    
+      end loop;
+      return count;
+    end function Count;
+
+    procedure AddFirst(item: ElementT) is
+      variable e: Link := new Entry;
+    begin
+      e.element := item;
+      e.link := head;
+      head := e;
+    end procedure;
+
+    function GetAt(index: integer) return ElementT is
+      variable count: integer := 0;
+      variable el: Link := head;
+    begin
+      while count < index and el.link /= null loop
+        count := count + 1;
+        el := el.link;
+      end loop;
+
+    end function;
+  end protected body;
+end package body;
 
 entity ex4 is
 end entity;
